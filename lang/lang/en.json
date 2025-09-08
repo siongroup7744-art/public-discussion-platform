@@ -1,0 +1,12 @@
+{
+  "title": "Public Discussion Platform",
+  "cat_transport": "Transport",
+  "cat_education": "Education",
+  "sub_metro": "Do you support metro expansion?",
+  "sub_digital_books": "Do you support digital textbooks?",
+  "vote_yes": "YES",
+  "vote_no": "NO",
+  "vote_yes_thank": "Thank you for your 'YES' vote!",
+  "vote_no_thank": "Thank you for your 'NO' vote!",
+  "opinion_placeholder": "Your opinion here..."
+}
