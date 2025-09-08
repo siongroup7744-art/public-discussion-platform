@@ -1,62 +1,55 @@
+
 document.addEventListener('DOMContentLoaded', () => {
-    const categorySelect = document.getElementById('category-select');
-    const openFormBtn = document.getElementById('open-form-btn');
-    const formContainer = document.getElementById('form-container');
-    const submitBtn = document.getElementById('submit-opinion');
-    const opinionInput = document.getElementById('opinion-input');
-    const discussionContainer = document.getElementById('discussion-container');
+    const categorySelect = document.getElementById('categorySelect');
+    const commentText = document.getElementById('commentText');
+    const submitBtn = document.getElementById('submitBtn');
 
-    let selectedCategory = '';
-
+    // Зареждане на вече записани мнения (ако ще се показват)
     function loadDiscussions() {
-        discussionContainer.innerHTML = '';
-        const allDiscussions = JSON.parse(localStorage.getItem('discussions')) || [];
+        const discussions = JSON.parse(localStorage.getItem('discussions')) || [];
+        const selectedCategory = categorySelect.value;
 
-        const filtered = allDiscussions.filter(d => d.category === selectedCategory);
+        const filtered = discussions.filter(d => d.category === selectedCategory);
+        console.log("Мнения за категорията", selectedCategory, filtered);
 
-        filtered.forEach(discussion => {
-            const div = document.createElement('div');
-            div.className = 'discussion-item';
-            div.innerHTML = `<strong>${discussion.category}</strong> (${discussion.date}):<br>${discussion.message}`;
-            discussionContainer.appendChild(div);
-        });
+        // Ако искаш да ги показваш в HTML – добави контейнер с ID напр. `discussionList`
+        // и тук ги визуализирай
     }
 
-    categorySelect.addEventListener('change', (e) => {
-        selectedCategory = e.target.value;
-        loadDiscussions();
-    });
+    // Когато потребителят натисне бутона за изпращане
+    submitBtn.addEventListener('click', (e) => {
+        e.preventDefault(); // За да не презарежда страницата
 
-    openFormBtn.addEventListener('click', () => {
-        if (selectedCategory === '') {
-            alert('Моля, изберете категория първо.');
+        const category = categorySelect.value;
+        const message = commentText.value.trim();
+
+        if (!category || !message) {
+            alert("Моля, попълнете всички полета.");
             return;
         }
-        formContainer.style.display = 'block';
-    });
-
-    submitBtn.addEventListener('click', () => {
-        const message = opinionInput.value.trim();
-        if (message === '') return;
 
         const newDiscussion = {
-            category: selectedCategory,
-            message: message,
+            category,
+            message,
             date: new Date().toLocaleDateString()
         };
 
-        const allDiscussions = JSON.parse(localStorage.getItem('discussions')) || [];
-        allDiscussions.push(newDiscussion);
-        localStorage.setItem('discussions', JSON.stringify(allDiscussions));
+        const discussions = JSON.parse(localStorage.getItem('discussions')) || [];
+        discussions.push(newDiscussion);
+        localStorage.setItem('discussions', JSON.stringify(discussions));
 
-        opinionInput.value = '';
-        formContainer.style.display = 'none';
-        loadDiscussions();
+        // Изчистване на полетата
+        commentText.value = '';
+        categorySelect.selectedIndex = 0;
+
+        alert("Вашето мнение беше запазено успешно!");
+
+        // Ако искаш да заредиш мненията:
+        // loadDiscussions();
     });
 
-    // Ако има избрана категория при зареждане
-    if (categorySelect.value !== '') {
-        selectedCategory = categorySelect.value;
+    // (по избор) Автоматично зареждане при избор на категория
+    categorySelect.addEventListener('change', () => {
         loadDiscussions();
-    }
+    });
 });
