@@ -1,0 +1,150 @@
+// Преводи
+const translations = {
+  bg: { /* твоите преводи тук */ },
+  en: { /* твоите преводи тук */ },
+  de: { /* твоите преводи тук */ }
+};
+
+// Подкатегории
+const subcats = {
+  education: ["Висше образование", "Средно образование", "Реформи", "Дигитално обучение", "Учебни програми", "Учители и преподаватели"],
+  environment: ["Замърсяване", "Устойчиво развитие", "Замърсяване на въздуха", "Климатични промени", "Опазване на водите", "Градска екология"],
+  // ... и останалите
+};
+
+const langButtons = document.querySelectorAll(".langs button");
+const sections = document.querySelectorAll(".section");
+const categoriesDiv = document.getElementById("categories");
+const subcategoriesDiv = document.getElementById("subcategories");
+const backBtn = document.getElementById("back-btn");
+const thankYouMsg = document.getElementById("thank-you");
+const opinionsList = document.getElementById("opinions-list");
+const opinionText = document.getElementById("opinion-text");
+const submitBtn = document.getElementById("submit-opinion");
+
+let chosenCat = "";
+let chosenSubcat = "";
+
+// Функция за смяна на езика
+function setLanguage(lang) {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (translations[lang][key]) {
+      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+        el.placeholder = translations[lang][key];
+      } else {
+        el.textContent = translations[lang][key];
+      }
+    }
+  });
+  opinionText.placeholder = translations[lang].placeholder;
+}
+
+// Избор на език
+langButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    langButtons.forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
+    setLanguage(button.dataset.lang);
+    renderOpinions(); // За да обновим текста "Все още няма мнения" на правилния език
+  });
+});
+
+// Превключване на видимата секция
+function switchSection(id) {
+  sections.forEach(sec => sec.classList.toggle("active", sec.id === id));
+  thankYouMsg.style.display = "none";
+  if (id === "step3") {
+    opinionText.value = "";
+  }
+}
+
+// Показване на подкатегории при избор на категория
+categoriesDiv.addEventListener("click", e => {
+  if (e.target.tagName === "BUTTON") {
+    chosenCat = e.target.dataset.level;
+    chosenSubcat = "";
+    renderSubcategories(chosenCat);
+    switchSection("step2");
+  }
+});
+
+// Рендериране на подкатегории
+function renderSubcategories(cat) {
+  subcategoriesDiv.innerHTML = "";
+  if (!subcats[cat]) {
+    subcategoriesDiv.textContent = "Няма подкатегории.";
+    return;
+  }
+  subcats[cat].forEach(subcat => {
+    const btn = document.createElement("button");
+    btn.textContent = subcat;
+    btn.addEventListener("click", () => {
+      chosenSubcat = subcat;
+      switchSection("step3");
+      renderOpinions();
+    });
+    subcategoriesDiv.appendChild(btn);
+  });
+}
+
+// Бутона "Назад"
+backBtn.addEventListener("click", () => {
+  switchSection("step1");
+});
+
+// Работа с мненията (localStorage)
+let opinionsData = JSON.parse(localStorage.getItem("opinionsData") || "{}");
+
+function renderOpinions() {
+  opinionsList.innerHTML = "";
+  const lang = document.querySelector(".langs button.active").dataset.lang;
+  const key = `${chosenCat}-${chosenSubcat}`;
+  const opinions = opinionsData[key] || [];
+
+  if (opinions.length === 0) {
+    opinionsList.textContent = translations[lang].no_opinions;
+    return;
+  }
+
+  opinions.forEach((opinion, index) => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.textContent = opinion;
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.textContent = "×";
+    delBtn.title = "Изтрий мнение";
+    delBtn.addEventListener("click", () => {
+      opinions.splice(index, 1);
+      opinionsData[key] = opinions;
+      localStorage.setItem("opinionsData", JSON.stringify(opinionsData));
+      renderOpinions();
+    });
+
+    div.appendChild(delBtn);
+    opinionsList.appendChild(div);
+  });
+}
+
+// Подаване на мнение
+submitBtn.addEventListener("click", () => {
+  const text = opinionText.value.trim();
+  if (!text) {
+    alert("Моля, въведете мнение.");
+    return;
+  }
+  const key = `${chosenCat}-${chosenSubcat}`;
+  if (!opinionsData[key]) opinionsData[key] = [];
+  opinionsData[key].push(text);
+  localStorage.setItem("opinionsData", JSON.stringify(opinionsData));
+  opinionText.value = "";
+  thankYouMsg.style.display = "block";
+  renderOpinions();
+});
+
+// Инициализиране на език и първоначален рендер
+setLanguage("bg");
+switchSection("step1");
