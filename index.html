@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Обществено Обсъждане</title>
+  <style>
+    .section { display: none; }
+    .section.active { display: block; }
+    .delete-btn { margin-left: 10px; cursor: pointer; }
+    #thank-you { color: green; display: none; margin-top: 10px; }
+    .langs button.active { font-weight: bold; }
+    #categories button, #subcategories button {
+      margin: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 data-i18n="title">Обществено Обсъждане</h1>
+  <p data-i18n="subtitle">Вашият глас има значение — споделете го!</p>
+
+  <div class="langs">
+    <button data-lang="bg" class="active">Български</button>
+    <button data-lang="en">English</button>
+    <button data-lang="de">Deutsch</button>
+  </div>
+
+  <div id="step1" class="section active">
+    <h2 data-i18n="choose_category">Изберете категория</h2>
+    <div id="categories">
+      <button data-level="education">Образование</button>
+      <button data-level="environment">Околна среда</button>
+      <button data-level="health">Здраве</button>
+      <button data-level="economy">Икономика</button>
+      <button data-level="transport">Транспорт</button>
+      <button data-level="culture">Култура</button>
+      <button data-level="technology">Технологии</button>
+      <button data-level="social">Социални въпроси</button>
+      <button data-level="sports">Спорт</button>
+      <button data-level="politics">Политика</button>
+    </div>
+  </div>
+
+  <div id="step2" class="section">
+    <h2 data-i18n="choose_subcategory">Изберете подкатегория</h2>
+    <div id="subcategories"></div>
+    <button id="back-btn" data-i18n="back">Назад</button>
+  </div>
+
+  <div id="step3" class="section">
+    <h2 data-i18n="your_opinion">Вашето мнение</h2>
+    <textarea id="opinion-text" placeholder="Вашето мнение..." rows="4" cols="50"></textarea><br />
+    <button id="submit-opinion" data-i18n="submit">Изпрати мнение</button>
+    <div id="thank-you" data-i18n="thanks">Благодарим за вашето мнение!</div>
+    <h3 data-i18n="related_opinions">Мнения по тази тема</h3>
+    <div id="opinions-list"></div>
+    <button id="back-btn-2" data-i18n="back">Назад</button>
+  </div>
+
+<script>
+  const translations = {
+    bg: {
+      title: "Обществено Обсъждане",
+      subtitle: "Вашият глас има значение — споделете го!",
+      lang_label: "Език:",
+      choose_category: "Изберете категория",
+      choose_subcategory: "Изберете подкатегория",
+      your_opinion: "Вашето мнение",
+      placeholder: "Вашето мнение...",
+      submit: "Изпрати мнение",
+      thanks: "Благодарим за вашето мнение!",
+      related_opinions: "Мнения по тази тема",
+      back: "Назад",
+      no_opinions: "Все още няма мнения."
+    },
+    en: {
+      title: "Public Discussion",
+      subtitle: "Your voice matters — share it!",
+      lang_label: "Language:",
+      choose_category: "Choose a category",
+      choose_subcategory: "Choose a subcategory",
+      your_opinion: "Your opinion",
+      placeholder: "Your opinion...",
+      submit: "Submit opinion",
+      thanks: "Thank you for your opinion!",
+      related_opinions: "Opinions on this topic",
+      back: "Back",
+      no_opinions: "No opinions yet."
+    },
+    de: {
+      title: "Öffentliche Diskussion",
+      subtitle: "Ihre Stimme zählt — teilen Sie sie!",
+      lang_label: "Sprache:",
+      choose_category: "Wählen Sie eine Kategorie",
+      choose_subcategory: "Wählen Sie eine Unterkategorie",
+      your_opinion: "Ihre Meinung",
+      placeholder: "Ihre Meinung...",
+      submit: "Meinung abschicken",
+      thanks: "Danke für Ihre Meinung!",
+      related_opinions: "Meinungen zu diesem Thema",
+      back: "Zurück",
+      no_opinions: "Noch keine Meinungen."
+    }
+  };
+
+  const subcats = {
+    education: [
+      "Висше образование",
+      "Средно образование",
+      "Реформи",
+      "Дигитално обучение",
+      "Учебни програми",
+      "Учители и преподаватели"
+    ],
+    environment: [
+      "Замърсяване",
+      "Устойчиво развитие",
+      "Замърсяване на въздуха",
+      "Климатични промени",
+      "Опазване на водите",
+      "Градска екология"
+    ],
+    health: [
+      "Болници",
+      "Профилактика",
+      "Здравни политики",
+      "Психично здраве",
+      "Диети и спорт",
+      "Достъп до лекарства"
+    ],
+    economy: [
+      "Данъци",
+      "Инвестиции",
+      "Заетост",
+      "Малък бизнес",
+      "Иновации",
+      "Трудов пазар"
+    ],
+    transport: [
+      "Градски транспорт",
+      "Пътища",
+      "Електромобили",
+      "Безопасност на движението",
+      "Велосипедна инфраструктура",
+      "Железопътни линии"
+    ],
+    culture: [
+      "Изкуство",
+      "Музеи и галерии",
+      "Фестивали",
+      "Кино",
+      "Литература",
+      "Традиции"
+    ],
+    technology: [
+      "Интернет и дигитализация",
+      "Изкуствен интелект",
+      "Киберсигурност",
+      "Софтуерно развитие",
+      "Научни изследвания",
+      "Роботика"
+    ],
+    social: [
+      "Социални услуги",
+      "Бедност и неравенство",
+      "Правата на човека",
+      "Миграция",
+      "Образование за всички",
+      "Гражданско участие"
+    ],
+    sports: [
+      "Футбол",
+      "Лека атлетика",
+      "Зимни спортове",
+      "Водни спортове",
+      "Спортна инфраструктура",
+      "Здравословен начин на живот"
+    ],
+    politics: [
+      "Избори",
+      "Политически партии",
+      "Законодателство",
+      "Международни отношения",
+      "Антикорупция",
+      "Медии и свобода на словото"
+    ]
+  };
+
+  let currentLang = 'bg';
+  let chosenCat = '';
+  let chosenSubcat = '';
+
+  const langButtons = document.querySelectorAll('.langs button');
+  const sections = document.querySelectorAll('.section');
+  const categoriesDiv = document.getElementById('categories');
+  const subcategoriesDiv = document.getElementById('subcategories');
+  const backBtnStep2 = document.getElementById('back-btn');
+  const backBtnStep3 = document.getElementById('back-btn-2');
+  const thankYouMsg = document.getElementById('thank-you');
+  const opinionText = document.getElementById('opinion-text');
+  const submitBtn = document.getElementById('submit-opinion');
+  const opinionsList = document.getElementById('opinions-list');
+
+  // Функция за превод
+  function translatePage() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (translations[currentLang] && translations[currentLang][key]) {
+        if ((el.tagName === 'TEXTAREA' || el.tagName === 'INPUT') && el.placeholder !== undefined) {
+          el.placeholder = translations[currentLang][key];
+        } else {
+          el.textContent = translations[currentLang][key];
+        }
+      }
+    });
+    renderSubcategories(chosenCat);
+  }
+
+  // Превключване на език
+  langButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      langButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLang = btn.getAttribute('data-lang');
+      translatePage();
+    });
+  });
+
+  // Показване на секция
+  function showSection(id) {
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // Зареждане на подкатегории
+  function renderSubcategories(cat) {
+    chosenSubcat = '';
+    subcategoriesDiv.innerHTML = '';
+    if (!cat) return;
+    const subs = subcats[cat];
+    if (!subs) return;
+    subs.forEach(sub => {
+      const btn = document.createElement('button');
+      btn.textContent = sub;
+      btn.addEventListener('click', () => {
+        chosenSubcat = sub;
+        showSection('step3');
+        opinionText.value = '';
+        thankYouMsg.style.display = 'none';
+        renderOpinions();
+      });
+      subcategoriesDiv.appendChild(btn);
+    });
+  }
+
+  // Показване на мнения за текуща категория и подкатегория
+  function renderOpinions() {
+    opinionsList.innerHTML = '';
+    if (!chosenCat || !chosenSubcat) return;
+    const key = `${chosenCat}-${chosenSubcat}`;
+    const opinions = JSON.parse(localStorage.getItem(key) || '[]');
+    if (opinions.length === 0) {
+      const p = document.createElement('p');
+      p.textContent = translations[currentLang].no_opinions;
+      opinionsList.appendChild(p);
+      return;
+    }
+    opinions.forEach((opinion, index) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.textContent = opinion;
+      // бутон за изтриване
+      const delBtn = document.createElement('button');
+      delBtn.className = 'delete-btn';
+      delBtn.textContent = '×';
+      delBtn.title = 'Изтрий мнение';
+      delBtn.addEventListener('click', () => {
+        opinions.splice(index, 1);
+        localStorage.setItem(key, JSON.stringify(opinions));
+        renderOpinions();
+      });
+      div.appendChild(delBtn);
+      opinionsList.appendChild(div);
+    });
+  }
+
+  // Натискане на категория
+  categoriesDiv.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      chosenCat = btn.getAttribute('data-level');
+      renderSubcategories(chosenCat);
+      showSection('step2');
+    });
+  });
+
+  // Назад към категории (от стъпка 2)
+  backBtnStep2.addEventListener('click', () => {
+    showSection('step1');
+    chosenSubcat = '';
+  });
+
+  // Назад към подкатегории (от стъпка 3)
+  backBtnStep3.addEventListener('click', () => {
+    showSection('step2');
+    thankYouMsg.style.display = 'none';
+  });
+
+  // Изпращане на мнение
+  submitBtn.addEventListener('click', () => {
+    const text = opinionText.value.trim();
+    if (!text) {
+      alert(currentLang === 'bg' ? 'Моля, въведете мнение.' : 
+            currentLang === 'en' ? 'Please enter your opinion.' :
+            'Bitte geben Sie Ihre Meinung ein.');
+      return;
+    }
+    const key = `${chosenCat}-${chosenSubcat}`;
+    const opinions = JSON.parse(localStorage.getItem(key) || '[]');
+    opinions.push(text);
+    localStorage.setItem(key, JSON.stringify(opinions));  // <-- Тук добавих липсващото
+    opinionText.value = '';
+    thankYouMsg.style.display = 'block';
+    renderOpinions();
+  });
+
+  // Първоначален превод
+  translatePage();
+
+</script>
+
+</body>
+</html>
