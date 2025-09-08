@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Обществена Платформа — Публично Обсъждане</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+    header {
+      background: #0077b6;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background: #023e8a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      color: #fff;
+    }
+    nav .langs button {
+      margin-left: 8px;
+      padding: 6px 10px;
+      border: none;
+      background: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    nav .langs button.active {
+      background: #f0f0a7;
+      font-weight: bold;
+    }
+    main {
+      max-width: 960px;
+      margin: 24px auto;
+      background: #fff;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+    .section {
+      padding: 24px;
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    .levels {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .levels button {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      background: #caf0f8;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+      min-width: 140px;
+      text-align: center;
+    }
+    .levels button:hover,
+    .levels button.selected {
+      background: #90e0ef;
+    }
+    .feedback {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    textarea,
+    .feedback button,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .feedback button {
+      background: #0077b6;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .feedback button:hover {
+      background: #005f8f;
+    }
+    .message {
+      display: none;
+      color: green;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .opinions {
+      margin-top: 20px;
+    }
+    .opinions .item {
+      background: #e0f7fa;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      word-wrap: break-word;
+      position: relative;
+    }
+    .opinions .item button.delete-btn {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      background: transparent;
+      border: none;
+      color: #900;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+    }
+    footer {
+      background: #03045e;
+      color: #fff;
+      text-align: center;
+      padding: 16px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 data-i18n="title">Обществено Обсъждане</h1>
+    <p data-i18n="subtitle">Вашият глас има значение — споделете го!</p>
+  </header>
+  <nav>
+    <div class="langs">
+      <span data-i18n="lang_label">Език:</span>
+      <button data-lang="bg" class="active">BG</button>
+      <button data-lang="en">EN</button>
+      <button data-lang="de">DE</button>
+    </div>
+  </nav>
+  <main>
+    <!-- Стъпка 1: Категории -->
+    <section id="step1" class="section active">
+      <h2 data-i18n="choose_category">Изберете категория</h2>
+      <div class="levels" id="categories">
+        <button data-level="education">Образование</button>
+        <button data-level="environment">Околна среда</button>
+        <button data-level="health">Здравеопазване</button>
+        <button data-level="economy">Икономика</button>
+        <button data-level="transport">Транспорт</button>
+        <button data-level="culture">Култура</button>
+        <button data-level="technology">Технологии</button>
+        <button data-level="social">Социални Въпроси</button>
+        <button data-level="sports">Спорт</button>
+        <button data-level="politics">Политика</button>
+      </div>
+    </section>
+
+    <!-- Стъпка 2: Подкатегории -->
+    <section id="step2" class="section">
+      <h2 data-i18n="choose_subcategory">Изберете подкатегория</h2>
+      <div class="levels" id="subcategories"></div>
+      <button id="back-btn" data-i18n="back">Назад</button>
+    </section>
+
+    <!-- Стъпка 3: Мнение -->
+    <section id="step3" class="section">
+      <h2 data-i18n="your_opinion">Вашето мнение</h2>
+      <div class="feedback">
+        <textarea id="opinion-text" placeholder="" data-i18n="placeholder"></textarea>
+        <button id="submit-opinion" data-i18n="submit">Изпрати мнение</button>
+        <div class="message" id="thank-you" data-i18n="thanks">Благодарим за вашето мнение!</div>
+      </div>
+      <div class="opinions">
+        <h3 data-i18n="related_opinions">Мнения по тази тема</h3>
+        <div id="opinions-list"></div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>© 2025 Платформа — Обществено Обсъждане</p>
+  </footer>
+
+  <script>
+    const translations = {
+      bg: {
+        title: "Обществено Обсъждане",
+        subtitle: "Вашият глас има значение — споделете го!",
+        lang_label: "Език:",
+        choose_category: "Изберете категория",
+        choose_subcategory: "Изберете подкатегория",
+        your_opinion: "Вашето мнение",
+        placeholder: "Вашето мнение...",
+        submit: "Изпрати мнение",
+        thanks: "Благодарим за вашето мнение!",
+        related_opinions: "Мнения по тази тема",
+        back: "Назад",
+        no_opinions: "Все още няма мнения."
+      },
+      en: {
+        title: "Public Discussion",
+        subtitle: "Your voice matters — share it!",
+        lang_label: "Language:",
+        choose_category: "Choose a category",
+        choose_subcategory: "Choose a subcategory",
+        your_opinion: "Your opinion",
+        placeholder: "Your opinion...",
+        submit: "Submit opinion",
+        thanks: "Thank you for your opinion!",
+        related_opinions: "Opinions on this topic",
+        back: "Back",
+        no_opinions: "No opinions yet."
+      },
+      de: {
+        title: "Öffentliche Diskussion",
+        subtitle: "Ihre Stimme zählt — teilen Sie sie!",
+        lang_label: "Sprache:",
+        choose_category: "Wählen Sie eine Kategorie",
+        choose_subcategory: "Wählen Sie eine Unterkategorie",
+        your_opinion: "Ihre Meinung",
+        placeholder: "Ihre Meinung...",
+        submit: "Meinung abschicken",
+        thanks: "Danke für Ihre Meinung!",
+        related_opinions: "Meinungen zu diesem Thema",
+        back: "Zurück",
+        no_opinions: "Noch keine Meinungen."
+      }
+    };
+
+    const subcats = {
+      education: [
+        "Висше образование",
+        "Средно образование",
+        "Реформи",
+        "Дигитално обучение",
+        "Учебни програми",
+        "Учители и преподаватели"
+      ],
+      environment: [
+        "Замърсяване",
+        "Устойчиво развитие",
+        "Замърсяване на въздуха",
+        "Климатични промени",
+        "Опазване на водите",
+        "Градска екология"
+      ],
+      health: [
+        "Болници",
+        "Профилактика",
+        "Здравни политики",
+        "Психично здраве",
+        "Диети и спорт",
+        "Достъп до лекарства"
+      ],
+      economy: [
+        "Данъци",
+        "Инвестиции",
+        "Заетост",
+        "Малък бизнес",
+        "Иновации",
+        "Трудов пазар"
+      ],
+      transport: [
+        "Градски транспорт",
+        "Пътища",
+        "Електромобили",
+        "Безопасност на движението",
+        "Велосипедна инфраструктура",
+        "Железопътни линии"
+      ],
+      culture: [
+        "Изкуство",
+        "Музеи и галерии",
+        "Фестивали",
+        "Кино",
+        "Литература",
+        "Традиции"
+      ],
+      technology: [
+        "Интернет и дигитализация",
+        "Изкуствен интелект",
+        "Киберсигурност",
+        "Софтуерно развитие",
+        "Научни изследвания",
+        "Роботика"
+      ],
+      social: [
+        "Социални услуги",
+        "Бедност и неравенство",
+        "Правата на човека",
+        "Миграция",
+        "Образование за всички",
+        "Гражданско участие"
+      ],
+      sports: [
+        "Футбол",
+        "Лека атлетика",
+        "Зимни спортове",
+        "Водни спортове",
+        "Спортна инфраструктура",
+        "Здравословен начин на живот"
+      ],
+      politics: [
+        "Избори",
+        "Политически партии",
+        "Законодателство",
+        "Международни отношения",
+        "Антикорупция",
+        "Медии и свобода на словото"
+      ]
+    };
+
+    const langButtons = document.querySelectorAll(".langs button");
+    const sections = document.querySelectorAll(".section");
+    let chosenCat = "",
+      chosenSubcat = "";
+    const categoriesDiv = document.getElementById("categories");
+    const subcategoriesDiv = document.getElementById("subcategories");
+    const backBtn = document.getElementById("back-btn");
+    const thankYouMsg = document.getElementById("thank-you");
