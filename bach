@@ -1,3 +1,0 @@
-git add .
-git commit -m "Добавяне на липсващи файлове"
-git push origin main
