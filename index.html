@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Обществено обсъждане</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Платформа за обществено обсъждане</h1>
+    <select id="languageSelector">
+      <option value="bg">Български</option>
+      <option value="en">English</option>
+      <option value="de">Deutsch</option>
+    </select>
+  </header>
+
+  <main>
+    <section class="categories">
+      <h2>Категории</h2>
+      <div class="category" data-category="Образование">📚 Образование</div>
+      <div class="category" data-category="Здравеопазване">🏥 Здравеопазване</div>
+      <div class="category" data-category="Инфраструктура">🏗️ Инфраструктура</div>
+    </section>
+
+    <section class="subcategories">
+      <h2>Подкатегории</h2>
+      <div id="subCategoryContainer">Избери категория</div>
+    </section>
+
+    <section class="comments">
+      <h2>Остави мнение</h2>
+      <textarea id="commentBox" placeholder="Вашето мнение..."></textarea>
+      <button onclick="postComment()">Изпрати</button>
+      <div id="commentList"></div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 Платформа за обществено обсъждане
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
