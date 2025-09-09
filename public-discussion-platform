@@ -1,9 +1,0 @@
-/public-discussion-platform
-├── index.html
-├── style.css
-├── script.js
-└── lang/
-    ├── bg.json
-    ├── en.json
-    ├── fr.json
-    └── de.json
