@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-i18n="title">Платформа за обсъждане</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1 data-i18n="headerTitle">Платформа за обсъждане</h1>
+    <select id="languageSelector" aria-label="Избор на език">
+      <option value="bg">Български</option>
+      <option value="en">English</option>
+      <option value="de">Deutsch</option>
+      <option value="fr">Français</option>
+      <option value="es">Español</option>
+    </select>
+  </header>
+
+  <main>
+    <!-- Списък с категории -->
+    <section id="categoriesSection">
+      <h2 data-i18n="categories">Категории</h2>
+      <div id="categoriesList"></div>
+    </section>
+
+    <!-- Подкатегории -->
+    <section id="subcategoriesSection" style="display:none;">
+      <button id="backToCategoriesBtn" aria-label="Назад към категории">← <span data-i18n="back">Назад</span></button>
+      <h2 data-i18n="subcategories">Подкатегории</h2>
+      <div id="subcategoriesList"></div>
+      <button id="createTopicBtn" class="main-btn">+ <span data-i18n="createTopic">Създай тема</span></button>
+    </section>
+
+    <!-- Създаване на тема -->
+    <section id="createTopicSection" style="display:none;">
+      <button id="backToSubcategoriesFromCreateBtn" aria-label="Назад към подкатегории">← <span data-i18n="back">Назад</span></button>
+      <h2 data-i18n="createTopicHeader">Създай нова тема</h2>
+      <input type="text" id="newTopicInput" placeholder="" aria-label="Заглавие на темата" />
+      <button id="submitNewTopicBtn" class="main-btn" data-i18n="createTopicBtn">Създай</button>
+    </section>
+
+    <!-- Теми -->
+    <section id="topicsSection" style="display:none;">
+      <button id="backToSubcategoriesFromTopicsBtn" aria-label="Назад към подкатегории">← <span data-i18n="back">Назад</span></button>
+      <h2 data-i18n="topics">Теми</h2>
+      <div id="topicsList"></div>
+    </section>
+
+    <!-- Коментари -->
+    <section id="commentsSection" style="display:none;">
+      <button id="backToTopicsBtn" aria-label="Назад към теми">← <span data-i18n="back">Назад</span></button>
+      <h2 data-i18n="comments">Остави мнение</h2>
+      <textarea id="commentInput" placeholder="" aria-label="Вашето мнение"></textarea>
+      <button id="submitCommentBtn" class="main-btn" data-i18n="postCommentBtn">Изпрати</button>
+      <div id="commentsList"></div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 <span data-i18n="footer">Платформа за обсъждане</span>
+  </footer>
+
+  <script src="https://unpkg.com/i18next@22.4.7/i18next.min.js"></script>
+  <script src="https://unpkg.com/i18next-browser-languagedetector@6.1.5/i18nextBrowserLanguageDetector.min.js"></script>
+  <script src="https://unpkg.com/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://unpkg.com/jquery-i18next@1.4.0/dist/umd/jquery-i18next.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
