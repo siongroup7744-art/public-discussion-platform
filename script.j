@@ -125,3 +125,122 @@ const backToSubcategoriesBtn = document.getElementById('backToSubcategories');
 
 let currentCategory = null;
 let currentSubcategory =
+let currentSubcategory = null;
+
+// Зарежда категории
+function loadCategories() {
+  categoriesList.innerHTML = '';
+  Object.keys(categoriesData).forEach(category => {
+    const div = document.createElement('div');
+    div.className = 'category';
+    div.textContent = category;
+    div.addEventListener('click', () => {
+      currentCategory = category;
+      showSubcategories(category);
+    });
+    categoriesList.appendChild(div);
+  });
+}
+
+// Показва подкатегории
+function showSubcategories(category) {
+  subCategoryContainer.innerHTML = '';
+  const subcategories = categoriesData[category];
+  subcategories.forEach(sub => {
+    const div = document.createElement('div');
+    div.className = 'subcategory';
+    div.textContent = sub;
+    div.addEventListener('click', () => {
+      currentSubcategory = sub;
+      showCommentsSection();
+    });
+    subCategoryContainer.appendChild(div);
+  });
+  categoriesSection.style.display = 'none';
+  subCategorySection.style.display = 'block';
+  commentsSection.style.display = 'none';
+}
+
+// Показва секцията за коментари
+function showCommentsSection() {
+  categoriesSection.style.display = 'none';
+  subCategorySection.style.display = 'none';
+  commentsSection.style.display = 'block';
+  loadComments();
+}
+
+// Връщане към категории
+backToCategoriesBtn.addEventListener('click', () => {
+  categoriesSection.style.display = 'block';
+  subCategorySection.style.display = 'none';
+  commentsSection.style.display = 'none';
+});
+
+// Връщане към подкатегории
+backToSubcategoriesBtn.addEventListener('click', () => {
+  categoriesSection.style.display = 'none';
+  subCategorySection.style.display = 'block';
+  commentsSection.style.display = 'none';
+});
+
+// Локално съхраняване и зареждане на коментари
+function loadComments() {
+  commentList.innerHTML = '';
+  const commentsKey = `${currentCategory}-${currentSubcategory}`;
+  const comments = JSON.parse(localStorage.getItem(commentsKey)) || [];
+  comments.forEach(({ text, likes = 0, dislikes = 0 }, index) => {
+    const div = document.createElement('div');
+    div.className = 'comment-item';
+    div.textContent = text;
+
+    const voteDiv = document.createElement('div');
+    voteDiv.className = 'vote-buttons';
+
+    const likeBtn = document.createElement('button');
+    likeBtn.textContent = `${i18next.t('like')} (${likes})`;
+    likeBtn.addEventListener('click', () => voteComment(index, true));
+
+    const dislikeBtn = document.createElement('button');
+    dislikeBtn.textContent = `${i18next.t('dislike')} (${dislikes})`;
+    dislikeBtn.addEventListener('click', () => voteComment(index, false));
+
+    voteDiv.appendChild(likeBtn);
+    voteDiv.appendChild(dislikeBtn);
+    div.appendChild(voteDiv);
+
+    commentList.appendChild(div);
+  });
+}
+
+// Гласуване за коментар
+function voteComment(index, isLike) {
+  const key = `${currentCategory}-${currentSubcategory}`;
+  const comments = JSON.parse(localStorage.getItem(key)) || [];
+  if (comments[index]) {
+    if (isLike) comments[index].likes = (comments[index].likes || 0) + 1;
+    else comments[index].dislikes = (comments[index].dislikes || 0) + 1;
+    localStorage.setItem(key, JSON.stringify(comments));
+    loadComments();
+  }
+}
+
+// Добавяне на коментар
+postCommentBtn.addEventListener('click', () => {
+  const comment = commentBox.value.trim();
+  if (!comment) {
+    alert(i18next.t('alertEmptyComment'));
+    return;
+  }
+
+  const key = `${currentCategory}-${currentSubcategory}`;
+  const comments = JSON.parse(localStorage.getItem(key)) || [];
+  comments.push({ text: comment, likes: 0, dislikes: 0 });
+  localStorage.setItem(key, JSON.stringify(comments));
+  commentBox.value = '';
+  loadComments();
+});
+
+// Старт
+document.addEventListener('DOMContentLoaded', () => {
+  loadCategories();
+});
