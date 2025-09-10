@@ -249,3 +249,9 @@ function renderTopics() {
       const li = document.createElement('li');
       li.textContent = topic.title;
       li.classList.toggle('active', topic.id === currentTopicId
+                          document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  translatePage();
+  renderCategories();
+});
+
