@@ -281,4 +281,38 @@ function renderComments() {
   }
   const subcategory = (category.subcategories || []).find(s => s.id === currentSubcategoryId);
   if (!subcategory) {
-    content.inner
+    content.innerdocument.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  translatePage();
+  renderCategories();
+
+  // Пример: Добавяне на събитие за бутона "Добави категория"
+  document.getElementById('add-category-btn').addEventListener('click', () => {
+    const name = prompt(translations[currentLang].enterCategoryName);
+    if (name && name.trim()) {
+      data.push({
+        id: createId(),
+        name: name.trim(),
+        subcategories: []
+      });
+      saveData();
+      renderCategories();
+    }
+  });
+
+  // Добави и обработка за смяна на език
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      if (lang !== currentLang) {
+        currentLang = lang;
+        translatePage();
+        renderCategories();
+        if (currentCategoryId) renderSubcategories();
+        if (currentSubcategoryId) renderTopics();
+        if (currentTopicId) renderComments();
+      }
+    });
+  });
+});
+
