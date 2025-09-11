@@ -248,8 +248,7 @@ function renderTopics() {
   content.appendChild(ul);
 }
 
-// --- КОМЕНТАРИ ---
-function renderComments() {
+// --- КОМЕНТАРИ -function renderComments() {
   const content = document.getElementById('content-area');
 
   const category = data.find(c => c.id === currentCategoryId);
@@ -257,4 +256,54 @@ function renderComments() {
   const topic = subcategory?.topics?.find(t => t.id === currentTopicId);
 
   if (!topic) {
-    content.innerHTML = `<
+    content.innerHTML = `<p>${translations[currentLang].selectTopicPrompt}</p>`;
+    return;
+  }
+
+  const h3 = document.createElement('h3');
+  h3.textContent = topic.title;
+  content.appendChild(h3);
+
+  const btnAdd = document.createElement('button');
+  btnAdd.className = 'btn add-btn';
+  btnAdd.textContent = translations[currentLang].addComment;
+  btnAdd.addEventListener('click', () => {
+    const comment = prompt(translations[currentLang].enterCommentText);
+    if (comment && comment.trim()) {
+      topic.comments = topic.comments || [];
+      topic.comments.push({ id: createId(), text: comment.trim(), votes: 0 });
+      saveData();
+      renderComments();
+    }
+  });
+  content.appendChild(btnAdd);
+
+  const ul = document.createElement('ul');
+  ul.className = 'comment-list';
+
+  if (!topic.comments || !topic.comments.length) {
+    const li = document.createElement('li');
+    li.textContent = translations[currentLang].noComments;
+    ul.appendChild(li);
+  } else {
+    topic.comments.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = c.text;
+
+      const voteBtn = document.createElement('button');
+      voteBtn.textContent = translations[currentLang].yes;
+      voteBtn.addEventListener('click', () => {
+        c.votes = (c.votes || 0) + 1;
+        alert(translations[currentLang].voteRecorded);
+        saveData();
+      });
+
+      li.appendChild(document.createTextNode(' '));
+      li.appendChild(voteBtn);
+      ul.appendChild(li);
+    });
+  }
+
+  content.appendChild(ul);
+}
+
